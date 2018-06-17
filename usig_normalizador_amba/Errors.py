@@ -13,6 +13,7 @@ Created on Apr 16, 2014
 from __future__ import absolute_import
 import unicodedata
 
+
 class ErrorNormalizacion(Exception):
     def __init__(self):
         raise Exception()
@@ -253,6 +254,7 @@ class ErrorTextoSinDireccion(Exception):
     '''
     Excepción para textos sin direcciones.
     '''
+
     def __init__(self, *args):
         '''
         @param texto: texto de búsqueda de dirección

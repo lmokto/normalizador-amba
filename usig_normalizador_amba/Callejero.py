@@ -5,7 +5,12 @@ Created on Apr 21, 2014
 @author: hernan
 '''
 from __future__ import absolute_import
-import urllib2
+
+if PY3:
+    from urllib.request import urlopen, HTTPError
+else:
+    from urllib2 import urlopen, HTTPError
+
 import re
 import json
 from bisect import bisect_left
@@ -49,7 +54,7 @@ class Callejero:
 
         try:
             self.cargarCallejero()
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def cargarCallejero(self):
@@ -61,7 +66,7 @@ class Callejero:
                 server = '{0}callejero/?partido={1}'.format(self.config['callejero_amba_server'], self.partido.codigo)
                 encoding = 'utf8'
 
-            data = urllib2.urlopen(server).read()
+            data = urlopen(server).read()
             self.data = json.loads(data, encoding)
             for d in self.data:
                 if self.partido.codigo == 'caba':
@@ -69,10 +74,10 @@ class Callejero:
                 d.append(set(normalizarTexto(d[1], separador=' ', lower=False).split(' ')))
             self.data.sort()  # Ordeno por id
             self.osm_ids = [k[0] for k in self.data]  # Armo lista de osm_ids
-        except urllib2.HTTPError, e:
+        except HTTPError as e:
             e.detalle = 'Se produjo un error al intentar cargar la información de calles.'
             raise e
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def buscarCodigo(self, codigo):

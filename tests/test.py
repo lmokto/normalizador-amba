@@ -4,6 +4,7 @@ import os
 import sys
 import unittest
 
+PY3 = sys.version_info.major > 2
 sys.path.insert(0, os.path.abspath('..'))
 
 from CommonsTestCase import CommonsTestCase
@@ -38,9 +39,9 @@ if __name__ == '__main__':
     ]
 
     for testable in testables:
-        print ''
-        print ''.center(80, '=')
-        print (u'  {0}  '.format(testable.__name__)).center(80, '=')
-        print ''.center(80, '=')
-        suite = tl.loadTestsFromTestCase(testable)
+        print('')
+        print(''.center(80, '='))
+        print((u'  {0}  '.format(testable.__name__)).center(80, '='))
+        print(''.center(80, '='))
+        suite = tl.loadTestsFromTestCase(testable))
         unittest.TextTestRunner(verbosity=2).run(suite)

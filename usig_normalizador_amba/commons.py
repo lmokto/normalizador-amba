@@ -5,6 +5,21 @@ Created on May 12, 2014
 @author: hernan
 '''
 from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import sys
+
+PY3 = sys.version_info.major > 2
+
+if PY3:
+    from builtins import str
+    unicode = str
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg)
+else:
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg, errors=errors).encode(encode)
+
 import re
 import unicodedata
 
@@ -44,14 +59,14 @@ def matcheaTexto(txt1, txt2, normalizar=True):
 
         return MATCH
 
-    except Exception, e:
+    except Exception as e:
         raise e
 
 
 # normaliza un string quitándole acentos y caracteres especiales
 def normalizarTexto(texto, separador=' ', lower=True):
     texto = texto.lower() if lower else texto.upper()
-    texto = unicode(texto)
+    texto = wrp_unicode(texto)
     texto = ''.join((c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn'))  # reemplazamos ñ y acentos por n y sin acentos
     texto = re.sub(r'[^a-zA-Z0-9 ]', ' ', texto)  # reemplazamos caracteres especiales por espacios
     texto = texto.strip()  # stripeo

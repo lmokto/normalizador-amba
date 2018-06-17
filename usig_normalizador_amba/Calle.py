@@ -5,6 +5,19 @@ Created on Apr 16, 2014
 @author: hernan
 '''
 from __future__ import absolute_import
+import sys
+
+PY3 = sys.version_info.major > 2
+
+if PY3:
+    from builtins import str
+    unicode = str
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg)
+else:
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg, errors=errors).encode(encode)
+
 
 from usig_normalizador_amba.Partido import Partido
 
@@ -44,7 +57,7 @@ class Calle:
         '''
         try:
             self.codigo = int(codigo)
-            self.nombre = unicode(nombre)
+            self.nombre = wrp_unicode(nombre)
             if isinstance(alturas, list):
                 self.alturas = alturas
             else:
@@ -57,9 +70,9 @@ class Calle:
                 self.partido = partido
             else:
                 raise TypeError('partido must be a Partido object.')
-            self.localidad = unicode(localidad)
+            self.localidad = wrp_unicode(localidad)
 
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def __str__(self):

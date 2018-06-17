@@ -5,6 +5,20 @@ Created on Apr 16, 2014
 @author: hernan
 '''
 from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import sys
+
+PY3 = sys.version_info.major > 2
+
+if PY3:
+    from builtins import str
+    unicode = str
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg)
+else:
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg, errors=errors).encode(encode)
 
 
 class Partido:
@@ -36,10 +50,10 @@ class Partido:
         '''
         try:
             self.codigo = str(codigo)
-            self.nombre = unicode(nombre)
-            self.keywords = unicode(keywords) if keywords != '' else self.nombre
+            self.nombre = wrp_unicode(nombre)
+            self.keywords = wrp_unicode(keywords) if keywords != '' else self.nombre
             self.codigo_osm = int(codigo_osm)
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def __str__(self):

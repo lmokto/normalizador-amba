@@ -5,7 +5,22 @@ Created on Jun 17, 2014
 @author: hernan
 '''
 from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import re
+import sys
+
+PY3 = sys.version_info.major > 2
+
+if PY3:
+    from builtins import str
+    unicode = str
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg)
+else:
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg, errors=errors).encode(encode)
+
 
 from usig_normalizador_amba.StringDireccion import StringDireccion
 from usig_normalizador_amba.Callejero import Callejero
@@ -16,6 +31,7 @@ from usig_normalizador_amba.settings import default_settings
 from usig_normalizador_amba.settings import CALLE, CALLE_ALTURA, CALLE_Y_CALLE
 from usig_normalizador_amba.settings import MATCH_EXACTO, MATCH_PERMUTADO, MATCH_INCLUIDO, MATCH
 from usig_normalizador_amba.commons import matcheaTexto
+
 
 
 class NormalizadorDirecciones:
@@ -45,13 +61,13 @@ class NormalizadorDirecciones:
                 raise Exception(u'Debe indicar el partido.')
             self.c = Callejero(partido, config)
             self.partido = partido
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def recargarCallejero(self):
         try:
             self.c.cargarCallejero()
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def normalizar(self, direccion, maxOptions=10):
@@ -70,7 +86,7 @@ class NormalizadorDirecciones:
             raise ErrorCalleInexistente(u'')
 
         if type(direccion) != unicode:
-            direccion = unicode(direccion, encoding='utf-8', errors='ignore')
+            direccion = wrp_unicode(direccion, encode='utf-8', errors='ignore')
         strDir = StringDireccion(direccion)
 
         for candidato in strDir.candidatos:
@@ -79,12 +95,12 @@ class NormalizadorDirecciones:
             elif candidato['tipo'] == CALLE_ALTURA:
                 try:
                     res += self.normalizarCalleAltura(candidato['calle'], candidato['altura'], maxOptions)
-                except Exception, error:
+                except Exception as error:
                     pass
             elif candidato['tipo'] == CALLE_Y_CALLE:
                 try:
                     res += self.normalizarCalleYCalle(candidato['calle'], candidato['cruce'], maxOptions)
-                except Exception, error:
+                except Exception as error:
                     pass
 
         if not res:
@@ -240,7 +256,7 @@ class NormalizadorDirecciones:
         return retval
 
     def buscarDireccion(self, texto=''):
-        texto = unicode(texto)
+        texto = wrp_unicode(texto)
         ''' Patron: (dir_calle [al] dir_altura) | (esq_calle y|e esq_cruce) '''
         patron_calle_altura = '(?:(?P<dir_conector>(?:\s+al)?\s+)(?P<dir_altura>[0-9]+))'
         patron_calle_calle = '(?P<esq_conector>\s+(?:y|e)\s+)'

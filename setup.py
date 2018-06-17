@@ -6,7 +6,11 @@ try:
 except ImportError:
     from distutils.core import setup
 
+import codecs
 import usig_normalizador_amba
+
+with codecs.open('requirements.txt', 'r') as fd:
+    setup_requires = fd.read().splitlines()
 
 with open('README.rst', 'r') as f:
     readme = f.read()
@@ -19,6 +23,7 @@ setup(
     author=usig_normalizador_amba.__author__,
     author_email=usig_normalizador_amba.__author_email__,
     url='https://github.com/usig/normalizador-amba',
+    setup_requires=setup_requires,
     license=usig_normalizador_amba.__license__,
     packages=['usig_normalizador_amba'],
     keywords='usig gcba gis normalizador direcciones amba',
@@ -29,7 +34,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: Spanish',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]

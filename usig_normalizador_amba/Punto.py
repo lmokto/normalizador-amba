@@ -5,6 +5,20 @@ Created on Apr 16, 2014
 @author: hernan
 '''
 from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import sys
+
+PY3 = sys.version_info.major > 2
+
+if PY3:
+    from builtins import str
+    unicode = str
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg)
+else:
+    def wrp_unicode(msg, encode='utf-8', errors="ignore"):
+        return unicode(msg, errors=errors).encode(encode)
 
 
 class Punto:
@@ -33,7 +47,7 @@ class Punto:
             self.x = float(x)
             self.y = float(y)
             self.srid = int(srid)
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def __str__(self):
@@ -45,7 +59,7 @@ class Punto:
         return u'({0},{1})'.format(self.x, self.y)
 
     def __unicode__(self):
-        return unicode(self.__str__())
+        return wrp_unicode(self.__str__())
 
     def toJson(self):
         '''

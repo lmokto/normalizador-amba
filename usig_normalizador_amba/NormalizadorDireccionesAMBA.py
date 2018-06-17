@@ -6,7 +6,16 @@ Modified on Mar 28, 2016
 @author: hernan
 '''
 from __future__ import absolute_import
-import urllib2
+from __future__ import unicode_literals
+
+import sys
+PY3 = sys.version_info.major > 2
+
+if PY3:
+    from urllib.request import urlopen, HTTPError
+else:
+    from urllib2 import urlopen, HTTPError
+
 import re
 import json
 
@@ -22,10 +31,10 @@ class NormalizadorDireccionesAMBA:
 
     def _getPartidosAMBA(self):
         try:
-            response = urllib2.urlopen(self.config['callejero_amba_server'] + 'partidos').read()
+            response = urlopen(self.config['callejero_amba_server'] + 'partidos').read()
             partidos = json.loads(response, 'utf8')
             return partidos
-        except urllib2.HTTPError, e:
+        except HTTPError as e:
             e.detalle = u'Se produjo un error al intentar cargar la información de partidos.'
             raise e
 
@@ -46,7 +55,7 @@ class NormalizadorDireccionesAMBA:
                     nd = NormalizadorDirecciones(partido, self.config)
                     self.normalizadores.append(nd)
 
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             e.detalle = u'Se produjo un error al intentar cargar la información de partidos.'
             raise e
 
@@ -54,7 +63,7 @@ class NormalizadorDireccionesAMBA:
         try:
             for nd in self.normalizadores:
                 nd.recargarCallejero()
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def normalizar(self, direccion, maxOptions=10):
@@ -64,13 +73,13 @@ class NormalizadorDireccionesAMBA:
         if re_partido:
             try:
                 res = self.normalizarPorPartido(re_partido.group(1), re_partido.group(2), maxOptions)
-            except Exception, e:
+            except Exception as e:
                 pass
 
         if len(res) == 0:
             try:
                 res = self.normalizarPorPartido(direccion, maxOptions=maxOptions)
-            except Exception, e:
+            except Exception as e:
                 pass
 
         if len(res):
@@ -96,7 +105,7 @@ class NormalizadorDireccionesAMBA:
                             res[2] += result
                         elif m == MATCH:
                             res[3] += result
-            except Exception, e:
+            except Exception as e:
                 pass
 
         if len(res[0] + res[1] + res[2] + res[3]):
@@ -129,7 +138,7 @@ class NormalizadorDireccionesAMBA:
                             res[2] += result
                         elif m == MATCH:
                             res[3] += result
-            except Exception, e:
+            except Exception as e:
                 pass
 
         if len(res[0] + res[1] + res[2] + res[3]):
